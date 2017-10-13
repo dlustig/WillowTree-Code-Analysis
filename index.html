@@ -69,6 +69,9 @@
             width: 100%;
             border: 1px solid black;
         }
+        th {
+            text-align: left;
+        }
         </style>
     </head>
     <body>
@@ -107,6 +110,7 @@
                 .then(response => {
                     if (response.status !== 200) {
                         reject(new Error("Error!"));
+                        //
                     }
 
                     response.json().then(imageList => {
@@ -124,9 +128,9 @@
          ***************************************************/
 
 
-        function getLastName(person) {
+        const getLastName = (person) => {
             return person.lastName;
-        }
+        };
 
         const getFirstName = (person) => {
             return person.firstName;
@@ -136,22 +140,24 @@
         // prepend http: to prevent invalid schemes like file:// or uri://
         const getImageUrl = (person) => {
             return `http:${person.headshot.url}`;
+            //
         };
 
         /**
          * Fisher-Yates shuffle
+         * O(n) time complexity and requires O(1) space
          */
         function shuffleList(list) {
             // Make a copy & don't mutate the passed in list
             let result = list.slice(1);
 
-            let tmp, j, i = list.length - 1
+            let tmp, randomInt; 
 
-            for (; i > 0; i -= 1) {
-                j = Math.floor(Math.random() * (i + 1));
+            for (var i = list.length - 1; i > 0; i -= 1) {
+                randomInt = Math.floor(Math.random() * (i + 1));
                 tmp = list[i];
-                list[i] = list[j];
-                list[j] = tmp;
+                list[i] = list[randomInt];
+                list[randomInt] = tmp;
             }
 
             return result;
@@ -164,7 +170,7 @@
          */
         function filterByName(searchForName, personList) {
             return personList.filter((person) => {
-                return person.firstName === searchForName || person.lastName === searchForName;
+                return person.fullName.toLowerCase().includes(searchForName.toLowerCase());
             });
         }
 
@@ -191,13 +197,13 @@
                 let result = objList.slice(1);
 
                 result.sort((a, b) => {
-                    if (a[prop] < b[prop]) {
+                    if (a[prop].toLowerCase() < b[prop].toLowerCase()) {
                         return -1;
                     }
 
-                    if (a[prop] > b[prop]) {
-                        return 1;
-                    }
+                    // if (a[prop] > b[prop]) {
+                    //     return 1;
+                    // }
 
                     return 1;
                 });
@@ -210,6 +216,18 @@
 
         const sortByLastName = (personList) => sortByFirstName(personList).reverse();
 
+        function filterPersonListByValidHeadshots(list){
+            return list.filter((person) => person.headshot.url != null );
+        }
+
+        function addFullNameProperty(list){
+            for (var x = 0; x < list.length; x++){
+                list[x].fullName = list[x].firstName + ' ' + list[x].lastName;
+            }
+            return list;
+        }
+
+        
 
         /*==================================================
 
@@ -252,12 +270,17 @@
             },
 
             componentDidMount() {
-                getPersonList().then((personList) =>
+                getPersonList().then((personList) => {
+                    personList = filterPersonListByValidHeadshots(personList);
+                    personList = addFullNameProperty(personList);
                     this.setState({
                         personList,
                         visiblePersonList: personList
-                    }));
+                    })
+                });
             },
+
+            
 
             _shuffleList() {
                 this.setState({
@@ -278,6 +301,7 @@
             },
 
             _onSearch(e) {
+                //
                 this.setState({
                     visiblePersonList: filterByName(e.target.value, this.state.personList)
                 });
