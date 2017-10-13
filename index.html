@@ -127,9 +127,9 @@
          ***************************************************/
 
 
-        function getLastName(person) {
+        const getLastName = (person) => {
             return person.lastName;
-        }
+        };
 
         const getFirstName = (person) => {
             return person.firstName;
@@ -168,7 +168,7 @@
          */
         function filterByName(searchForName, personList) {
             return personList.filter((person) => {
-                return person.firstName === searchForName || person.lastName === searchForName;
+                return person.fullName.toLowerCase().includes(searchForName.toLowerCase());
             });
         }
 
@@ -195,13 +195,13 @@
                 let result = objList.slice(1);
 
                 result.sort((a, b) => {
-                    if (a[prop] < b[prop]) {
+                    if (a[prop].toLowerCase() < b[prop].toLowerCase()) {
                         return -1;
                     }
 
-                    if (a[prop] > b[prop]) {
-                        return 1;
-                    }
+                    // if (a[prop] > b[prop]) {
+                    //     return 1;
+                    // }
 
                     return 1;
                 });
@@ -214,6 +214,18 @@
 
         const sortByLastName = (personList) => sortByFirstName(personList).reverse();
 
+        function filterPersonListByValidHeadshots(list){
+            return list.filter((person) => person.headshot.url != null );
+        }
+
+        function addFullNameProperty(list){
+            for (var x = 0; x < list.length; x++){
+                list[x].fullName = list[x].firstName + ' ' + list[x].lastName;
+            }
+            return list;
+        }
+
+        
 
         /*==================================================
 
@@ -256,12 +268,17 @@
             },
 
             componentDidMount() {
-                getPersonList().then((personList) =>
+                getPersonList().then((personList) => {
+                    personList = filterPersonListByValidHeadshots(personList);
+                    personList = addFullNameProperty(personList);
                     this.setState({
                         personList,
                         visiblePersonList: personList
-                    }));
+                    })
+                });
             },
+
+            
 
             _shuffleList() {
                 this.setState({
