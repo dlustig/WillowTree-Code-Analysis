@@ -110,6 +110,7 @@
                 .then(response => {
                     if (response.status !== 200) {
                         reject(new Error("Error!"));
+                        //
                     }
 
                     response.json().then(imageList => {
@@ -139,6 +140,7 @@
         // prepend http: to prevent invalid schemes like file:// or uri://
         const getImageUrl = (person) => {
             return `http:${person.headshot.url}`;
+            //
         };
 
         /**
@@ -299,6 +301,7 @@
             },
 
             _onSearch(e) {
+                //
                 this.setState({
                     visiblePersonList: filterByName(e.target.value, this.state.personList)
                 });
