@@ -143,18 +143,19 @@
 
         /**
          * Fisher-Yates shuffle
+         * O(n) time complexity and requires O(1) space
          */
         function shuffleList(list) {
             // Make a copy & don't mutate the passed in list
             let result = list.slice(1);
 
-            let tmp, j, i = list.length - 1
+            let tmp, randomInt; 
 
-            for (; i > 0; i -= 1) {
-                j = Math.floor(Math.random() * (i + 1));
+            for (var i = list.length - 1; i > 0; i -= 1) {
+                randomInt = Math.floor(Math.random() * (i + 1));
                 tmp = list[i];
-                list[i] = list[j];
-                list[j] = tmp;
+                list[i] = list[randomInt];
+                list[randomInt] = tmp;
             }
 
             return result;
